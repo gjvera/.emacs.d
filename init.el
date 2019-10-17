@@ -1,5 +1,8 @@
 (require 'package)
+(package-initialize)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'load-path "~/.emacs.d/custom-plugins/")
 (setq is-windows (or (string= "windows-nt" system-type)
 			  (string= "msdos" system-type)))
 (setq is-linux (or (string= "gnu/linux" system-type)))
@@ -13,6 +16,12 @@
 (global-hl-line-mode)
 (electric-pair-mode 1)
 (setq inhibit-startup-screen t)
+(global-set-key (kbd "C-x <up>") 'windmove-up)
+(global-set-key (kbd "C-x <down>") 'windmove-down)
+(global-set-key (kbd "C-x <left>") 'windmove-left)
+(global-set-key (kbd "C-x <right>") 'windmove-right)
+(evil-commentary-mode)
+(require 'evil-surround)
 (package-initialize)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -22,9 +31,10 @@
  '(custom-safe-themes
    (quote
     ("1a094b79734450a146b0c43afb6c669045d7a8a5c28bc0210aba28d36f85d86f" "f6f5d5adce1f9a764855c9730e4c3ef3f90357313c1cae29e7c191ba1026bc15" default)))
+ '(line-number-mode nil)
  '(package-selected-packages
    (quote
-    (ac-emacs-eclim auto-complete company-emacs-eclim eclim no-littering treemacs-evil treemacs color-theme-modern base16-theme java-snippets flycheck lsp-ui company-lsp yasnippet lsp-java latex-preview-pane cyberpunk-theme evil))))
+    (helm gnu-elpa-keyring-update typescript-mode evil-surround evil-commentary ac-emacs-eclim auto-complete company-emacs-eclim eclim no-littering treemacs-evil treemacs color-theme-modern base16-theme java-snippets flycheck lsp-ui company-lsp yasnippet lsp-java latex-preview-pane cyberpunk-theme evil))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -55,11 +65,28 @@
 (require 'treemacs)
 (yas-global-mode 1)
 (evil-mode 1)
-;;(load-theme 'cyberpunk t)
+(global-evil-surround-mode 1)
 (load-theme 'calm-forest)
 
 ;;LaTeX
 (latex-preview-pane-enable)
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection "digestif")
+                  :major-modes '(latex-mode plain-tex-mode)
+                  :server-id 'digestif))
+(add-to-list 'lsp-language-id-configuration '(latex-mode . "latex"))
+(add-to-list 'lsp-language-id-configuration '(plain-tex-mode . "plaintex"))
+(add-to-list 'company-lsp-filter-candidates '(digestif . nil))
+
+;;Typescript/Javascript
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . js-mode))
+(add-hook 'js-mode-hook #'lsp)
+(add-hook 'typescript-mode-hook #'lsp)
+(add-hook 'lsp-mode-hook 'flycheck-mode)
+(add-hook 'lsp-mode-hook 'lsp-ui-mode)
+(add-hook 'lsp-mode-hook #'lsp-ui-sideline-mode)
 
 ;;Java
 (defun my-eclim-fix-relative-path (path)
@@ -69,15 +96,18 @@
 (setq eclimd-autostart t)
 (add-hook 'java-mode-hook (lambda() (eclim-mode t)))
 (require 'company-emacs-eclim)
+(require 'google-java-format)
 (company-emacs-eclim-setup)
 (global-company-mode t)
-;;(require 'lsp-java)
+(require 'flycheck-eclim)
 (require 'lsp-ui)
-(add-hook 'lsp-mode-hook 'lsp-ui-mode)
-;;(add-hook 'java-mode-hook #'lsp)
-(add-hook 'lsp-mode-hook 'flycheck-mode)
+(add-hook 'java-mode-hook 'lsp-ui-mode)
+(add-hook 'java-mode-hook 'flycheck-mode)
 (setq lsp-ui-flycheck-enable t)
 (setq lsp-ui-sideline-show-hover t)
 (add-hook 'java-mode-hook #'lsp-ui-sideline-mode)
 (add-hook 'java-mode-hook #'yas-minor-mode)
+
+;;XML
+(add-hook 'nXML-mode-hook #'lsp)
 

@@ -195,7 +195,8 @@ The result is also stored in `eclim--completion-start'."
                          ;; no particular harm done.
                          (and (eq ?\< (char-before))
                               (memq major-mode
-                                    '(java-mode c++-mode goovy-mode))))
+                                    '(java-mode c++-mode groovy-mode)))
+			 (eq ?\. (char-before)))
                  (backward-char 1))
                (ignore-errors (beginning-of-thing 'symbol))
                ;; Completion candidates for annotations don't include '@'.
