@@ -41,7 +41,7 @@
   :group 'tools)
 
 (defcustom google-java-format-executable
-  "/usr/bin/google-java-format"
+  "/usr/local/bin/google-java-format"
   "Location of the google-java-format executable.
 
 A string containing the name or the full path of the executable."
