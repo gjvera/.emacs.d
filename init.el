@@ -34,7 +34,7 @@
  '(line-number-mode t)
  '(package-selected-packages
    (quote
-    (powerline-evil magit json-mode helm gnu-elpa-keyring-update typescript-mode evil-surround evil-commentary ac-emacs-eclim auto-complete company-emacs-eclim eclim no-littering treemacs-evil treemacs color-theme-modern base16-theme java-snippets flycheck lsp-ui company-lsp yasnippet lsp-java latex-preview-pane cyberpunk-theme evil))))
+    (rainbow-delimiters prettier-js powerline-evil magit json-mode helm gnu-elpa-keyring-update typescript-mode evil-surround evil-commentary ac-emacs-eclim auto-complete company-emacs-eclim eclim no-littering treemacs-evil treemacs color-theme-modern base16-theme java-snippets flycheck lsp-ui company-lsp yasnippet lsp-java latex-preview-pane cyberpunk-theme evil))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -68,6 +68,7 @@
 (require 'cl)
 (require 'powerline)
 (require 'evil-leader)
+(require 'prettier-js)
 (yas-global-mode 1)
 (global-evil-leader-mode)
 (evil-mode 1)
@@ -97,6 +98,12 @@
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js-mode))
 (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
+(add-hook 'js-mode-hook 'prettier-js-mode)
+(add-hook 'typescript-mode-hook 'prettier-js-mode)
+(setq prettier-js-args '(
+			 "--singleQuote" "true"
+			 "--trailingComma" "es5"
+			 "--semi" "false"))
 (add-hook 'js-mode-hook #'lsp)
 (add-hook 'typescript-mode-hook #'lsp)
 (add-hook 'lsp-mode-hook 'flycheck-mode)
