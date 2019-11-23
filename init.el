@@ -30,7 +30,7 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("8e04544d71b7de9289a258b5ae555226308384cb2444b5e9166ec9e2173520bc" "b393166cc4672666d671a77058da6f3e74a8e56ca6764316f588ff91dbeba54d" "1a094b79734450a146b0c43afb6c669045d7a8a5c28bc0210aba28d36f85d86f" "f6f5d5adce1f9a764855c9730e4c3ef3f90357313c1cae29e7c191ba1026bc15" default)))
+    ("ec303b80fbc49b7ac823a7c266bf12650fbc5c9a5ebbc1ca94461cdb2f81d821" "8e04544d71b7de9289a258b5ae555226308384cb2444b5e9166ec9e2173520bc" "b393166cc4672666d671a77058da6f3e74a8e56ca6764316f588ff91dbeba54d" "1a094b79734450a146b0c43afb6c669045d7a8a5c28bc0210aba28d36f85d86f" "f6f5d5adce1f9a764855c9730e4c3ef3f90357313c1cae29e7c191ba1026bc15" default)))
  '(line-number-mode t)
  '(package-selected-packages
    (quote
@@ -52,13 +52,42 @@
 ;;OS Specific config
 (when is-windows
     (setq doc-view-ghostscript-program "C:/Program Files/gs/gs9.27/bin/gswin64c.exe")
-    (setq lsp-java-server-install-dir "C:/Users/gvgam/dev/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository/"))
+    (setq lsp-java-server-install-dir "C:/Users/gvgam/dev/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository/")
+    (setq lsp-clients-typescript-server "C:/Users/gvgam/AppData/Roaming/npm/typescript-language-server"
+	  lsp-clients-typescript-server-args '("--stdio"))
+    (setq lsp-clients-javascript-typescript-server "c:/Users/gvgam/AppData/Roaming/npm/typescript-language-server")
+    (require 'lsp-java)
+    ;; Although I prefer eclim there is no windows support so lsp-java will have to do
+    (add-hook 'java-mode-hook #'lsp)
+    (add-hook 'java-mode-hook 'lsp-ui-mode)
+    (setq lsp-ui-flycheck-enable t)
+    (setq lsp-ui-sideline-show-hover t)
+    (add-hook 'java-mode-hook #'yas-minor-mode))
 (when is-mac
     (setq doc-view-ghostscript-program "/usr/local/bin/gsc")
     (setq lsp-java-server-install-dir "~/dev/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository/")
     (setq mac-command-modifier 'meta)
     (add-to-list 'default-frame-alist '(ns-appearance . dark))
-    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
+    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+    (defun my-eclim-fix-relative-path (path)
+      (replace-regexp-in-string "^.*src/" "src/" path))
+    (advice-add 'eclim--project-current-file :filter-return #'my-eclim-fix-relative-path)
+    (require 'eclim)
+    (setq eclimd-autostart t)
+    (add-hook 'java-mode-hook (lambda() (eclim-mode t)))
+    (require 'company-emacs-eclim)
+    (require 'google-java-format)
+    (company-emacs-eclim-setup)
+    (global-company-mode t)
+    (require 'flycheck-eclim)
+    (require 'lsp-ui)
+    (add-hook 'java-mode-hook 'lsp-ui-mode)
+    (add-hook 'java-mode-hook 'flycheck-mode)
+    (setq lsp-ui-flycheck-enable t)
+    (setq lsp-ui-sideline-show-hover t)
+    (add-hook 'java-mode-hook #'lsp-ui-sideline-mode)
+    (add-hook 'java-mode-hook #'yas-minor-mode))
+
 (require 'evil)
 (require 'yasnippet)
 (require 'flycheck)
@@ -72,6 +101,7 @@
 (yas-global-mode 1)
 (global-evil-leader-mode)
 (evil-mode 1)
+(show-paren-mode 1)
 (global-evil-surround-mode 1)
 (evil-leader/set-leader"<SPC>")
 (evil-leader/set-key
@@ -109,26 +139,6 @@
 (add-hook 'lsp-mode-hook 'flycheck-mode)
 (add-hook 'lsp-mode-hook 'lsp-ui-mode)
 (add-hook 'lsp-mode-hook #'lsp-ui-sideline-mode)
-
-;;Java
-(defun my-eclim-fix-relative-path (path)
-  (replace-regexp-in-string "^.*src/" "src/" path))
-(advice-add 'eclim--project-current-file :filter-return #'my-eclim-fix-relative-path)
-(require 'eclim)
-(setq eclimd-autostart t)
-(add-hook 'java-mode-hook (lambda() (eclim-mode t)))
-(require 'company-emacs-eclim)
-(require 'google-java-format)
-(company-emacs-eclim-setup)
-(global-company-mode t)
-(require 'flycheck-eclim)
-(require 'lsp-ui)
-(add-hook 'java-mode-hook 'lsp-ui-mode)
-(add-hook 'java-mode-hook 'flycheck-mode)
-(setq lsp-ui-flycheck-enable t)
-(setq lsp-ui-sideline-show-hover t)
-(add-hook 'java-mode-hook #'lsp-ui-sideline-mode)
-(add-hook 'java-mode-hook #'yas-minor-mode)
 
 ;;XML
 (add-hook 'nXML-mode-hook #'lsp)
