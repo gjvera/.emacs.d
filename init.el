@@ -1,5 +1,4 @@
 (require 'package)
-(package-initialize)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'load-path "~/.emacs.d/custom-plugins/")
@@ -15,6 +14,7 @@
 (scroll-bar-mode -1)
 (global-hl-line-mode)
 (electric-pair-mode 1)
+(exec-path-from-shell-initialize)
 (setq inhibit-startup-screen t)
 (global-set-key (kbd "C-x <up>") 'windmove-up)
 (global-set-key (kbd "C-x <down>") 'windmove-down)
@@ -29,12 +29,11 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   (quote
-    ("ec303b80fbc49b7ac823a7c266bf12650fbc5c9a5ebbc1ca94461cdb2f81d821" "8e04544d71b7de9289a258b5ae555226308384cb2444b5e9166ec9e2173520bc" "b393166cc4672666d671a77058da6f3e74a8e56ca6764316f588ff91dbeba54d" "1a094b79734450a146b0c43afb6c669045d7a8a5c28bc0210aba28d36f85d86f" "f6f5d5adce1f9a764855c9730e4c3ef3f90357313c1cae29e7c191ba1026bc15" default)))
+   '("ec303b80fbc49b7ac823a7c266bf12650fbc5c9a5ebbc1ca94461cdb2f81d821" "8e04544d71b7de9289a258b5ae555226308384cb2444b5e9166ec9e2173520bc" "b393166cc4672666d671a77058da6f3e74a8e56ca6764316f588ff91dbeba54d" "1a094b79734450a146b0c43afb6c669045d7a8a5c28bc0210aba28d36f85d86f" "f6f5d5adce1f9a764855c9730e4c3ef3f90357313c1cae29e7c191ba1026bc15" default))
+ '(helm-ag-base-command "rg --hidden --no-heading --debug")
  '(line-number-mode t)
  '(package-selected-packages
-   (quote
-    (rainbow-delimiters prettier-js powerline-evil magit json-mode helm gnu-elpa-keyring-update typescript-mode evil-surround evil-commentary ac-emacs-eclim auto-complete company-emacs-eclim eclim no-littering treemacs-evil treemacs color-theme-modern base16-theme java-snippets flycheck lsp-ui company-lsp yasnippet lsp-java latex-preview-pane cyberpunk-theme evil))))
+   '(counsel-projectile helm-rg helm-ag exec-path-from-shell rainbow-delimiters prettier-js powerline-evil magit json-mode helm gnu-elpa-keyring-update typescript-mode evil-surround evil-commentary ac-emacs-eclim auto-complete company-emacs-eclim eclim no-littering treemacs-evil treemacs color-theme-modern base16-theme java-snippets flycheck lsp-ui company-lsp yasnippet lsp-java latex-preview-pane cyberpunk-theme evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -94,10 +93,11 @@
 (require 'flymake)
 (require 'company-lsp)
 (require 'treemacs)
-(require 'cl)
 (require 'powerline)
 (require 'evil-leader)
 (require 'prettier-js)
+(require 'counsel-projectile)
+(counsel-projectile-mode)
 (yas-global-mode 1)
 (global-evil-leader-mode)
 (evil-mode 1)
@@ -105,10 +105,14 @@
 (global-evil-surround-mode 1)
 (evil-leader/set-leader"<SPC>")
 (evil-leader/set-key
- "e" 'find-file
+ "e" 'counsel-projectile-find-file
  "b" 'switch-to-buffer
  "k" 'kill-buffer
- "tr" 'treemacs-refresh)
+ "tr" 'treemacs-refresh
+ "f" 'counsel-projectile-rg)
+
+
+(require 'helm)
 
 (setq custom-theme-directory "~/.emacs.d/custom-plugins")
 (load-theme 'synthwave)
